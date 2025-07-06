@@ -120,16 +120,25 @@
  */
 (async () => {
   try {
-    const res  = await fetch('/images/');
-    const html = await res.text();
-    const doc  = new DOMParser().parseFromString(html, 'text/html');
-
-    const links = [...doc.querySelectorAll('a')]
-      .map(a => a.getAttribute('href'))
-      .filter(href => /\.(jpe?g|png|gif|webp)$/i.test(href));
-
     const grid = document.getElementById('galleryGrid');
-    links.forEach(src => {
+    const images = [
+      "IMG_0369.JPG",
+      "IMG_4689.HEIC.jpg",
+      "DSC00627.JPG",
+      "IMG_1048.jpg",
+      "IMG_6700.JPG",
+      "IMG_5454.HEIC.jpg",
+      "IMG_4378.JPG",
+      "IMG_1178.JPG",
+      "IMG_1040.jpg",
+      "IMG_1039.jpg",
+      "IMG_1014.jpg",
+      "IMG_4618.HEIC.jpg",
+      "IMG_4344.HEIC.jpg",
+      "IMG_1083.HEIC.jpg",
+      "DSC00051.JPG"
+    ];
+    images.forEach(src => {
       const img = new Image();
       img.src = '/images/' + src.replace(/^.*[\\/]/,''); // ensure path
       img.loading = 'lazy';
