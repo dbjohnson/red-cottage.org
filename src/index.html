@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Cottage</title>
+
+<!-- ­­­—‑‑‑ BASIC STYLES —‑‑‑ -->
+<style>
+  :root {
+    --brand: #2a5d6a;
+    --light: #f5f7f9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial,sans-serif}
+  body{color:#222;background:var(--light);line-height:1.5}
+  header img{width:100%;height:45vh;object-fit:cover}
+  h2{margin:2rem 0 1rem;color:var(--brand);font-size:1.6rem;text-align:center}
+  section{padding:0 5vw 2rem}
+  ul{list-style:square inside}
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+  .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px}
+  /* calendar wrapper makes iframe responsive */
+  .cal-wrap{position:relative;padding-bottom:75%;height:0}
+  .cal-wrap iframe{position:absolute;top:0;left:0;width:100%;height:75%;border:0}
+  /* simple anchor button */
+  .btn-mail{
+    display:inline-block;margin:1rem auto;padding:.75rem 1.25rem;
+    background:var(--brand);color:#fff;text-decoration:none;border-radius:4px;
+  }
+
+  /* lightbox modal */
+  #modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  #modal img {
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+  #modal .close {
+    position: absolute;
+    top: 20px; right: 30px;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1) HEADER IMAGE -->
+<header>
+  <img src="/images/header.jpg" alt="The cottage and lake view">
+</header>
+
+<!-- 2) INFORMATION SECTION -->
+<section id="info">
+  <h2>The Red Cottage at Lake Avalon</h2>
+  <p>Come visit beautiful Lake Avalon in your own private retreat!</p>
+  <br>
+  <p><strong>Season:</strong> June 15 - August 15 (weekly rentals, Saturday change‑over)</p>
+  <p><strong>Amenities:</strong></p>
+  <ul>
+    <li>2 bedrooms: 1 queen bed, 1 bunk bed and 1 single</li>
+    <li>Fully equipped kitchen &amp; charcoal grill</li>
+    <li>Large screened porch with lake view</li>
+    <li>Private dock &amp; canoe</li>
+    <li>High‑speed Wi‑Fi &amp; smart TV</li>
+    <li>Pet‑friendly (additional cleaning fee)</li>
+  </ul>
+</section>
+
+<!-- 5) MAILTO LINK -->
+<section style="text-align:center">
+  <a class="btn-mail" href="mailto:sorlandijohnson@gmail.com?subject=Cottage%20booking%20enquiry">
+    Request a Booking
+  </a>
+</section>
+
+
+<!-- 3) IMAGE GALLERY -->
+<section id="gallery">
+  <div class="gallery" id="galleryGrid"></div>
+</section>
+
+<section id="map">
+  <h2>Directions</h2>
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2816.487707587781!2d-83.9611533061637!3d45.09618069647765!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4d34c17bb854d7c3%3A0x473064b42114e4b2!2s17572%20Avalon%20Dr%2C%20Hillman%2C%20MI%2049746!5e0!3m2!1sen!2sus!4v1751829062922!5m2!1sen!2sus" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</section>
+
+<!-- 4) AVAILABILITY CALENDAR -->
+<section id="availability">
+  <h2>Availability</h2>
+  <div class="cal-wrap">
+  <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&showCalendars=0&showTitle=0&src=MDBjNmYzNGQ4MDZhZmNiOTBkODY0YTcxYmQ5MWRlOWZkMmI0MmE1MzE0YzdiZGM0MzhlMDkyM2RhMmY5ODEwOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%234285f4" style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+  </div>
+</section>
+
+
+<!-- lightbox modal -->
+<div id="modal">
+  <span class="close">&times;</span>
+  <img src="" alt="Enlarged image">
+</div>
+
+<!-- —‑‑‑ AUTO‑LOAD ALL IMAGES FROM /images —‑‑‑ -->
+<script>
+/*
+ * The code below fetches a directory listing (requires directory browsing enabled)
+ * and injects every JPG/PNG/GIF/WEBP file it finds into the gallery.
+ * If your server does NOT expose a plain HTML index, replace this with a hard‑coded list.
+ */
+(async () => {
+  try {
+    const res  = await fetch('/images/');
+    const html = await res.text();
+    const doc  = new DOMParser().parseFromString(html, 'text/html');
+
+    const links = [...doc.querySelectorAll('a')]
+      .map(a => a.getAttribute('href'))
+      .filter(href => /\.(jpe?g|png|gif|webp)$/i.test(href));
+
+    const grid = document.getElementById('galleryGrid');
+    links.forEach(src => {
+      const img = new Image();
+      img.src = '/images/' + src.replace(/^.*[\\/]/,''); // ensure path
+      img.loading = 'lazy';
+      grid.appendChild(img);
+    });
+  } catch (err) {
+    console.warn('Gallery auto‑load failed:', err);
+  }
+
+  // lightbox functionality
+  const modal = document.getElementById('modal');
+  const modalImg = modal.querySelector('img');
+  const closeBtn = modal.querySelector('.close');
+
+  document.getElementById('galleryGrid')
+    .addEventListener('click', e => {
+      if (e.target.tagName === 'IMG') {
+        modalImg.src = e.target.src;
+        modal.style.display = 'flex';
+      }
+    });
+
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  // close if clicking outside the image
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>
