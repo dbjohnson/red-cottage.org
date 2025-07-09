@@ -145,7 +145,7 @@
     ];
     images.forEach(src => {
       const img = new Image();
-      img.src = '/images/' + src.replace(/^.*[\\/]/,''); // ensure path
+      img.src = '/images/gallery/' + src.replace(/^.*[\\/]/,''); // ensure path
       img.loading = 'lazy';
       grid.appendChild(img);
     });
